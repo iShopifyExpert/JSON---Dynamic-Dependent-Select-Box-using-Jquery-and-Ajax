@@ -1,0 +1,55 @@
+<label class="fields_label" for="state">State</label>
+<select class="login-input" name="state" id="state" required>
+  <option value="Choose Your School">Select State</option>
+</select>
+
+<label class="fields_label" for="city">City</label>
+<select class="login-input" name="city" id="city" required>
+  <option value="Choose Your School">Select City</option>
+</select>
+
+<label class="fields_label" for="school">Your School</label>
+<select class="login-input" name="customer[note][Your School]" id="school" required>
+  <option value="Choose Your School">Select Your School</option>
+</select>
+
+<script>
+  $(document).ready(function(){
+    load_json_data('state');
+    function load_json_data(id, parent_id) {
+      var html_code = '';
+      $.getJSON('{{"state-city-school.json" | asset_url}}', function(data){
+        html_code += '<option value="">Select '+id+'</option>';
+        $.each(data, function(key, value){
+          if(id == 'state') {
+            if(value.parent_id == '0') {
+              html_code += '<option value="'+value.id+'">'+value.name+'</option>';
+            }
+          } else {
+            if(value.parent_id == parent_id) {
+              html_code += '<option value="'+value.id+'">'+value.name+'</option>';
+            }
+          }
+        });
+        $('#'+id).html(html_code);
+      });
+    }
+    $(document).on('change', '#state', function() {
+      var state_id = $(this).val();
+      if(state_id != '') {
+        load_json_data('city', state_id);
+      } else {
+        $('#city').html('<option value="">Select city</option>');
+        $('#school').html('<option value="">Select school</option>');
+      }
+    });
+    $(document).on('change', '#city', function(){
+      var city_id = $(this).val();
+      if(city_id != '') {
+        load_json_data('school', city_id);
+      } else { 
+        $('#school').html('<option value="">Select school</option>');
+      }
+    });
+  });
+</script>
